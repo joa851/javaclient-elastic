@@ -2,7 +2,7 @@ package org.viewnext.aplicacion;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Test {
+class TestAplicacion {
 
 	@org.junit.jupiter.api.Test
 	void TestCreacionProducto() {
