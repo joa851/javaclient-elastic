@@ -49,8 +49,8 @@ public class Aplicacion {
 		Producto producto = new Producto("abc", "codigo", 42.0);
 		Producto producto2 = new Producto("def", "purse", 30.0);
 
-//		cliente.index(a -> a.index("product").id("org-viewnext-java").document(producto));
-//		cliente.index(a -> a.index("product2").id(producto.getId()).document(producto2));
+		cliente.index(a -> a.index("product").id("org-viewnext-java").document(producto));
+		cliente.index(a -> a.index("product2").id(producto.getId()).document(producto2));
 
 		logger.log(Level.INFO, "Productos creados e indexados");
 
