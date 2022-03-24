@@ -1,31 +1,31 @@
 package org.viewnext.aplicacion;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import org.opentest4j.AssertionFailedError;
+import org.junit.Test;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 
-class AplicacionTest {
-
-	@org.junit.jupiter.api.Test
-	void TestCreacionProducto() {
+public class AplicacionTest {
+	@Test
+	public void TestCreacionProducto() {
 		Producto producto1 = new Producto("id", "nombre", 10.00);
 		Producto producto2 = new Producto();
 		producto2.setId("id");
 		producto2.setName("nombre");
 		producto2.setPrice(20.00);
-		
+
 		assertTrue(producto1.getName().equals(producto2.getName()));
 		assertTrue(producto1.getId().equals(producto2.getId()));
-		assertTrue(producto1.getPrice()!=producto2.getPrice());
+		assertTrue(producto1.getPrice() != producto2.getPrice());
 		assertFalse(producto1.equals(producto2));
 	}
-	
+
 //	@org.junit.jupiter.api.Test
 //	void TestInsercionBusqueda() throws ElasticsearchException, IOException {
 //		ElasticsearchClient cliente = Aplicacion.iniciarConexion();
