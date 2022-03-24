@@ -22,7 +22,7 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 public class Aplicacion {
-	private static ElasticsearchClient iniciarConexion() {
+	public static ElasticsearchClient iniciarConexion() {
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "changeme"));
 
