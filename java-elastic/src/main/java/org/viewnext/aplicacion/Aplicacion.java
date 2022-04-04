@@ -26,7 +26,7 @@ public class Aplicacion {
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "changeme"));
 
-		RestClientBuilder builder = RestClient.builder(new HttpHost("172.20.0.4", 9200, "http"))
+		RestClientBuilder builder = RestClient.builder(new HttpHost("localhost", 9200, "http"))
 				.setHttpClientConfigCallback(new HttpClientConfigCallback() {
 					public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
 						httpClientBuilder.disableAuthCaching();
