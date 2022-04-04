@@ -23,49 +23,64 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 <span class="nc" id="L24">public class Aplicacion {</span>
 	public static ElasticsearchClient iniciarConexion() {
-<span class="nc" id="L26">		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();</span>
-<span class="nc" id="L27">		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(&quot;elastic&quot;, &quot;changeme&quot;));</span>
+<span class="fc" id="L26">		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();</span>
+<span class="fc" id="L27">		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(&quot;elastic&quot;, &quot;changeme&quot;));</span>
 
-<span class="nc" id="L29">		RestClientBuilder builder = RestClient.builder(new HttpHost(&quot;localhost&quot;, 9200, &quot;http&quot;))</span>
-<span class="nc" id="L30">				.setHttpClientConfigCallback(new HttpClientConfigCallback() {</span>
+<span class="fc" id="L29">		RestClientBuilder builder = RestClient.builder(new HttpHost(&quot;localhost&quot;, 9200, &quot;http&quot;))</span>
+<span class="fc" id="L30">				.setHttpClientConfigCallback(new HttpClientConfigCallback() {</span>
 					public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-<span class="nc" id="L32">						httpClientBuilder.disableAuthCaching();</span>
-<span class="nc" id="L33">						return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);</span>
+<span class="fc" id="L32">						httpClientBuilder.disableAuthCaching();</span>
+<span class="fc" id="L33">						return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);</span>
 					}
 				});
 
-<span class="nc" id="L37">		RestClient httpClient = builder.build();</span>
-<span class="nc" id="L38">		JacksonJsonpMapper jsonMapper = new JacksonJsonpMapper();</span>
-<span class="nc" id="L39">		ElasticsearchTransport transport = new RestClientTransport(httpClient, jsonMapper);</span>
-
-<span class="nc" id="L41">		return new ElasticsearchClient(transport);</span>
+<span class="fc" id="L37">		RestClient httpClient = builder.build();</span>
+<span class="fc" id="L38">		JacksonJsonpMapper jsonMapper = new JacksonJsonpMapper();</span>
+<span class="fc" id="L39">		ElasticsearchTransport transport = new RestClientTransport(httpClient, jsonMapper);</span>
+		
+		
+<span class="fc" id="L42">		return new ElasticsearchClient(transport);</span>
+	}
+	
+	public static boolean indexar(ElasticsearchClient cliente, String index, String id, Object document) {
+		
+			try {
+<span class="nc" id="L48">				cliente.index(a -&gt; a.index(index).id(id).document(document));</span>
+<span class="nc" id="L49">			} catch (ElasticsearchException e) {</span>
+<span class="nc" id="L50">				e.printStackTrace();</span>
+<span class="nc" id="L51">				return false;</span>
+<span class="nc" id="L52">			} catch (IOException e) {</span>
+<span class="nc" id="L53">				e.printStackTrace();</span>
+<span class="nc" id="L54">				return false;</span>
+			}
+<span class="nc" id="L56">		return true;</span>
 	}
 
 	public static void main(String[] args) throws ElasticsearchException, IOException {
-<span class="nc" id="L45">		ElasticsearchClient cliente = iniciarConexion();</span>
+<span class="nc" id="L60">		ElasticsearchClient cliente = iniciarConexion();</span>
+<span class="nc" id="L61">		Logger logger = Logger.getLogger(Aplicacion.class.getName());</span>
 
-<span class="nc" id="L47">		Logger logger = Logger.getLogger(Aplicacion.class.getName());</span>
+<span class="nc" id="L63">		Producto producto = new Producto(&quot;abc&quot;, &quot;codigo&quot;, 42.0);</span>
+<span class="nc" id="L64">		Producto producto2 = new Producto(&quot;def&quot;, &quot;purse&quot;, 30.0);</span>
+		
+<span class="nc" id="L66">		Aplicacion.indexar(cliente, &quot;product&quot;, &quot;org-viewnext-java&quot;, producto);</span>
+		
+<span class="nc" id="L68">		cliente.index(a -&gt; a.index(&quot;product2&quot;).id(producto.getId()).document(producto2));</span>
 
-<span class="nc" id="L49">		Producto producto = new Producto(&quot;abc&quot;, &quot;codigo&quot;, 42.0);</span>
-<span class="nc" id="L50">		Producto producto2 = new Producto(&quot;def&quot;, &quot;purse&quot;, 30.0);</span>
+<span class="nc" id="L70">		logger.log(Level.INFO, &quot;Productos creados e indexados&quot;);</span>
 
-<span class="nc" id="L52">		cliente.index(a -&gt; a.index(&quot;product&quot;).id(&quot;org-viewnext-java&quot;).document(producto));</span>
-<span class="nc" id="L53">		cliente.index(a -&gt; a.index(&quot;product2&quot;).id(producto.getId()).document(producto2));</span>
+<span class="nc" id="L72">		SearchResponse&lt;Producto&gt; searchBag = cliente</span>
+<span class="nc" id="L73">				.search(b -&gt; b.index(&quot;product&quot;).query(q -&gt; q.term(t -&gt; t.field(&quot;name&quot;).value(&quot;bag&quot;))), Producto.class);</span>
 
-<span class="nc" id="L55">		logger.log(Level.INFO, &quot;Productos creados e indexados&quot;);</span>
+<span class="nc" id="L75">		SearchResponse&lt;Producto&gt; searchPurse = cliente.search(</span>
+<span class="nc" id="L76">				b -&gt; b.index(&quot;product2&quot;).query(q -&gt; q.term(t -&gt; t.field(&quot;name&quot;).value(&quot;purse&quot;))), Producto.class);</span>
 
-<span class="nc" id="L57">		SearchResponse&lt;Producto&gt; searchBag = cliente</span>
-<span class="nc" id="L58">				.search(b -&gt; b.index(&quot;product&quot;).query(q -&gt; q.term(t -&gt; t.field(&quot;name&quot;).value(&quot;bag&quot;))), Producto.class);</span>
+<span class="nc" id="L78">		Producto productoBag = searchBag.hits().hits().get(0).source();</span>
+<span class="nc" id="L79">		logger.log(Level.INFO, productoBag.getId());</span>
 
-<span class="nc" id="L60">		SearchResponse&lt;Producto&gt; searchPurse = cliente.search(</span>
-<span class="nc" id="L61">				b -&gt; b.index(&quot;product2&quot;).query(q -&gt; q.term(t -&gt; t.field(&quot;name&quot;).value(&quot;purse&quot;))), Producto.class);</span>
+<span class="nc" id="L81">		Producto productoPurse = searchPurse.hits().hits().get(0).source();</span>
+<span class="nc" id="L82">		logger.log(Level.INFO, productoPurse.getId());</span>
 
-<span class="nc" id="L63">		Producto productoBag = searchBag.hits().hits().get(0).source();</span>
-<span class="nc" id="L64">		logger.log(Level.INFO, productoBag.getId());</span>
-
-<span class="nc" id="L66">		Producto productoPurse = searchPurse.hits().hits().get(0).source();</span>
-<span class="nc" id="L67">		logger.log(Level.INFO, productoPurse.getId());</span>
-
-<span class="nc" id="L69">	}</span>
+<span class="nc" id="L84">	}</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

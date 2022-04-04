@@ -26,8 +26,6 @@ public class AplicacionTest {
 		assertFalse(producto1.equals(producto2));
 	}
 	
-	
-
 	@Test
 	public void TestInsercionBusqueda() throws ElasticsearchException, IOException {
 		ElasticsearchClient cliente = Aplicacion.iniciarConexion();
@@ -38,5 +36,7 @@ public class AplicacionTest {
 		Producto productoRecuperado = search.hits().hits().get(0).source();
 		assertTrue(productoRecuperado.getId().equals(producto.getId()));
 	}
+
+
 
 }
