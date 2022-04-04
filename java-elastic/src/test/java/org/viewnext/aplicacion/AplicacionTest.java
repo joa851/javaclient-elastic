@@ -25,15 +25,18 @@ public class AplicacionTest {
 		assertTrue(producto1.getPrice() != producto2.getPrice());
 		assertFalse(producto1.equals(producto2));
 	}
+	
+	
 
-//	@org.junit.jupiter.api.Test
-//	void TestInsercionBusqueda() throws ElasticsearchException, IOException {
-//		ElasticsearchClient cliente = Aplicacion.iniciarConexion();
-//		Producto producto = new Producto("abc", "codigo", 42.0);
-//		cliente.index(a -> a.index("test").id("junit").document(producto));	
-//		SearchResponse<Producto> search = cliente
-//				.search(b -> b.index("test").query(q -> q.term(t -> t.field("name").value("codigo"))), Producto.class);
-//		assertTrue(search.hits().hits().get(0).equals(producto));
-//	}
+	@Test
+	public void TestInsercionBusqueda() throws ElasticsearchException, IOException {
+		ElasticsearchClient cliente = Aplicacion.iniciarConexion();
+		Producto producto = new Producto("abc", "codigo", 42.0);
+		cliente.index(a -> a.index("test").id("junit").document(producto));	
+		SearchResponse<Producto> search = cliente
+				.search(b -> b.index("test").query(q -> q.term(t -> t.field("name").value("codigo"))), Producto.class);
+		Producto productoRecuperado = search.hits().hits().get(0).source();
+		assertTrue(productoRecuperado.getId().equals(producto.getId()));
+	}
 
 }

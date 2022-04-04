@@ -37,19 +37,34 @@ public class Aplicacion {
 		RestClient httpClient = builder.build();
 		JacksonJsonpMapper jsonMapper = new JacksonJsonpMapper();
 		ElasticsearchTransport transport = new RestClientTransport(httpClient, jsonMapper);
-
+		
+		
 		return new ElasticsearchClient(transport);
+	}
+	
+	public static boolean indexar(ElasticsearchClient cliente, String index, String id, Object document) {
+		
+			try {
+				cliente.index(a -> a.index(index).id(id).document(document));
+			} catch (ElasticsearchException e) {
+				e.printStackTrace();
+				return false;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		return true;
 	}
 
 	public static void main(String[] args) throws ElasticsearchException, IOException {
 		ElasticsearchClient cliente = iniciarConexion();
-
 		Logger logger = Logger.getLogger(Aplicacion.class.getName());
 
 		Producto producto = new Producto("abc", "codigo", 42.0);
 		Producto producto2 = new Producto("def", "purse", 30.0);
-
-		cliente.index(a -> a.index("product").id("org-viewnext-java").document(producto));
+		
+		Aplicacion.indexar(cliente, "product", "org-viewnext-java", producto);
+		
 		cliente.index(a -> a.index("product2").id(producto.getId()).document(producto2));
 
 		logger.log(Level.INFO, "Productos creados e indexados");
